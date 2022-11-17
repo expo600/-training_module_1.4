@@ -1,7 +1,8 @@
 package main.java.com.ryzhov_andrey.multithreading.task;
 
-
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import static main.java.com.ryzhov_andrey.multithreading.task.MultiThreadEx.r;
 
@@ -12,22 +13,22 @@ public class MultiThreadEx {
     public static void main(String[] args) throws InterruptedException {
 
         Foo foo = new Foo();
+        ExecutorService es = Executors.newFixedThreadPool(3);
 
-        new Thread(new Thread_C("C", foo)).start();
-        new Thread(new Thread_B("B", foo)).start();
-        new Thread(new Thread_A("A", foo)).start();
+        es.execute(new Thread_C(foo));
+        es.execute(new Thread_B(foo));
+        es.execute(new Thread_A(foo));
+
+        es.shutdown();
     }
 }
 
 class Thread_A implements Runnable {
     private Foo foo;
-    private String name;
 
-    public Thread_A(String name, Foo foo) {
-        this.name = name;
+    public Thread_A(Foo foo) {
         this.foo = foo;
     }
-
     @Override
     public void run() {
         foo.first(r);
@@ -36,14 +37,10 @@ class Thread_A implements Runnable {
 
 class Thread_B implements Runnable {
     private Foo foo;
-    private String name;
 
-    public Thread_B(String name, Foo foo) {
-        this.name = name;
+    public Thread_B(Foo foo) {
         this.foo = foo;
-
     }
-
     @Override
     public void run() {
         foo.second(r);
@@ -52,13 +49,10 @@ class Thread_B implements Runnable {
 
 class Thread_C implements Runnable {
     private Foo foo;
-    private String name;
 
-    public Thread_C(String name, Foo foo) {
-        this.name = name;
+    public Thread_C(Foo foo) {
         this.foo = foo;
     }
-
     @Override
     public void run() {
         foo.third(r);
